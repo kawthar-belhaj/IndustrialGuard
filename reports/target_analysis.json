@@ -1,0 +1,104 @@
+{
+  "findings": [
+    [
+      "Cible",
+      "La cible est binaire (0 normal / 1 attaque), à 1 Hz, sans valeur manquante, et n'existe que dans test1 et test2."
+    ],
+    [
+      "Cible",
+      "label-test2.csv a 230,400 lignes mais seulement 3,841 timestamps distincts (60 lignes par timestamp) : ses dates sont TRONQUÉES À LA MINUTE. Une jointure sur le timestamp est donc fausse ; l'alignement correct est « positionnel » (même nombre de lignes que les mesures, concordance à la minute vérifiée à 100 %). Ces « doublons » apparents ne sont pas une erreur de données."
+    ],
+    [
+      "Répartition",
+      "test1 : 5.52 % d'attaque ; test2 : 3.65 %. Sur l'ensemble des 1,180,800 secondes du dataset, seulement 0.96 % sont des attaques : la classe d'intérêt est très rare."
+    ],
+    [
+      "Déséquilibre",
+      "Rapport normal : attaque = 17 : 1 (test1) et 26 : 1 (test2). Un détecteur qui ne signale JAMAIS d'attaque obtient une accuracy de 94.5 % et 96.4 % avec un rappel nul : l'accuracy est inutilisable."
+    ],
+    [
+      "Déséquilibre",
+      "Un score aléatoire obtient une précision moyenne ≈ p (0.055 et 0.036) et une AUC de 0,5 : ce sont les valeurs plancher à battre. Métriques à utiliser : précision, rappel, F1, eTaPR, rappel par événement, fausses alertes par heure."
+    ],
+    [
+      "Déséquilibre",
+      "Au niveau des blocs de temps : 14/15 blocs d'1 h de test1 et 39/64 de test2 contiennent une attaque ; au niveau des événements : seulement 14 et 38. Toute validation croisée doit se faire PAR BLOCS DE TEMPS ou par événement, jamais par seconde tirée au hasard."
+    ],
+    [
+      "Événements",
+      "14 événements dans test1 et 38 dans test2 (identique à la documentation officielle : 14 et 38). Concentration : la plus longue attaque pèse 21 % des secondes d'attaque de test1 et 24 % de test2 ; les 5 plus longues 63 % et 50 %."
+    ],
+    [
+      "Fiabilité des labels",
+      "test1 : 14/14 événements retrouvés à ±2 s dans le catalogue officiel (écart maximal 0 s)."
+    ],
+    [
+      "Fiabilité des labels",
+      "test2 : 38/38 événements retrouvés à ±2 s dans le catalogue officiel (écart maximal 0 s). L'en-tête officiel annonce 40 attaques mais le fichier en liste 38 : les labels suivent la liste."
+    ],
+    [
+      "Métrique",
+      "Quelques attaques très longues dominent le nombre de secondes en attaque : un F1 calculé seconde par seconde reflèterait surtout ces quelques événements. Il faut des métriques PAR ÉVÉNEMENT (eTaPR, rappel par attaque)."
+    ],
+    [
+      "Durée",
+      "Durées de 56 s à 2052 s (médiane 132 s). Part des événements au moins aussi longs que la fenêtre : 10 s → 100 %; 30 s → 100 %; 60 s → 98 %; 120 s → 67 %; 300 s → 13 %."
+    ],
+    [
+      "Fenêtres",
+      "2 % des attaques durent moins de 60 s et 33 % moins de 120 s. Une fenêtre de 60 s dilue déjà une partie des événements ; une fenêtre de 120 s en dilue 33 % et une fenêtre de 300 s 87 %. Les fenêtres de 10 et 30 s sont les plus sûres pour la détection ; les longues apportent du contexte mais retardent la réaction."
+    ],
+    [
+      "Réalisme",
+      "Fréquence : 0.93 attaque/h (test1) et 0.59 attaque/h (test2). Une attaque toutes les 1 à 2 heures est volontairement très supérieure à la réalité d'une usine : le dataset sert à tester la détection, pas à estimer un taux d'incidents réel. Les fausses alertes par heure mesurées ici seront donc plus pénalisantes qu'en exploitation."
+    ],
+    [
+      "Calendrier",
+      "Régularité des arrivées (CV des délais entre débuts) : test1 = 0.19 (régulier); test2 = 1.32 (par rafales). Un CV éloigné de 1 indique un calendrier d'expérience (planifié) et non des attaques aléatoires : un modèle pourrait exploiter ce calendrier si on lui donnait l'heure comme variable."
+    ],
+    [
+      "Calendrier",
+      "Aucune variable temporelle absolue (heure, jour, rang de la seconde) ne doit entrer dans les features : le calendrier des attaques est un artefact du protocole d'expérience, pas un signal physique."
+    ],
+    [
+      "Baseline locale",
+      "Certaines attaques n'ont pas 5 minutes de fonctionnement normal juste avant elles (début de fichier ou attaque rapprochée de la précédente) : la comparaison « avant / pendant » ne sera pas possible pour toutes (voir tableau)."
+    ],
+    [
+      "Transitions",
+      "Une fois en attaque, le label reste à 1 la seconde suivante avec une probabilité de 0.9955 (test2) : durée moyenne d'une attaque ≈ 221 s ; une fois normal, il y reste avec une probabilité de 0.99983 : durée moyenne d'un séjour normal ≈ 5842 s. Les labels sont très persistants : une alarme isolée d'une seconde n'a pas de sens ; on raisonne en séquences."
+    ],
+    [
+      "Retour au normal",
+      "À la fin officielle de l'attaque, l'écart des variables les plus perturbées vaut 1.2 × celui des fenêtres normales de même durée. Il redevient durablement compatible avec la fluctuation normale (sous le 3ᵉ quartile du placebo, mêmes règles de sélection) à partir de ≈ 0 s après la fin."
+    ],
+    [
+      "Marge de tolérance",
+      "La marge de 60 s de la Phase 2 est cohérente avec ce délai de retour (0 s). Indicatif : estimation sur un nombre limité d'événements, avec des variables de natures très différentes."
+    ]
+  ],
+  "key_numbers": {
+    "repartition": {
+      "train_s": 896400,
+      "test_s": 284400,
+      "attack_s": 11384,
+      "attack_pct_dataset": 0.9640921409214093
+    },
+    "events": {
+      "test1": {
+        "n": 14,
+        "attack_s": 2981
+      },
+      "test2": {
+        "n": 38,
+        "attack_s": 8403
+      }
+    },
+    "durations": {
+      "min": 56,
+      "median": 132.5,
+      "max": 2052
+    },
+    "recovery_s": 0
+  }
+}

@@ -1,0 +1,50 @@
+[
+  [
+    "Métrique",
+    "Avec l'encodage du README, le même cas partiel obtient eTaPR-F1 = 1.00 (faux) au lieu de 0.44. Convention imposée dans tout le projet : 0 = normal, 1 = anomalie (testée dans tests/test_features_eval.py)."
+  ],
+  [
+    "Features",
+    "66 variables → 462 features (niveau + 3 deltas + 3 écarts-types). Une décision toutes les 10 s : 69702 échantillons d'apprentissage (protocole sessions)."
+  ],
+  [
+    "Signature",
+    "Rappel par classe de signature univariée (notebook 1) : chrono/aucune: 0/6; chrono/faible (1-2): 3/14; chrono/forte (≥3): 16/18; sessions/aucune: 0/6; sessions/faible (1-2): 4/14; sessions/forte (≥3): 16/18."
+  ],
+  [
+    "Échelle",
+    "[sessions] eTaPR-F1 test (variables seules, seuil fa1) : maxz 0.25 → pca 0.25 → iforest 0.05. La complexité ne paie pas de façon monotone : le notebook 3 devra le démontrer, pas le supposer."
+  ],
+  [
+    "Échelle",
+    "[chrono] eTaPR-F1 test (variables seules, seuil fa1) : maxz 0.22 → pca 0.14 → iforest 0.08. La complexité ne paie pas de façon monotone : le notebook 3 devra le démontrer, pas le supposer."
+  ],
+  [
+    "H5 features",
+    "[sessions] pca : eTaPR-F1 0.25 (variables seules) → 0.25 (niveau + variations + dispersion) : les features temporelles n apportent pas de gain net la détection."
+  ],
+  [
+    "H5 features",
+    "[sessions] iforest : eTaPR-F1 0.05 (variables seules) → 0.20 (niveau + variations + dispersion) : les features temporelles améliorent la détection."
+  ],
+  [
+    "H5 features",
+    "[chrono] pca : eTaPR-F1 0.14 (variables seules) → 0.31 (niveau + variations + dispersion) : les features temporelles améliorent la détection."
+  ],
+  [
+    "H5 features",
+    "[chrono] iforest : eTaPR-F1 0.08 (variables seules) → 0.21 (niveau + variations + dispersion) : les features temporelles améliorent la détection."
+  ],
+  [
+    "H1 protocole",
+    "Écart moyen d'eTaPR-F1 (sessions − chrono) sur les 15 configurations : +0.004 (min -0.07, max +0.10). Pas d'optimisme net du protocole « sessions » sur ces références."
+  ],
+  [
+    "H6 seuil",
+    "Seuil « bestf1 » (réglé sur les 14 attaques de val) : eTaPR-F1 val 0.46 contre test 0.19 → optimisme moyen +0.27. Indice en faveur de H6 (le réglage sur val se transfère mal) sur 10 configurations seulement : à confirmer avec plusieurs graines et la validation croisée par attaque."
+  ],
+  [
+    "H6 seuil",
+    "Budget « fa1 » = 1.0/h sur val_normal ; médiane des fausses alertes réellement observées sur le test = 1.1/h (sur val_normal : 0.9/h). Le budget de fausses alertes se transfère correctement."
+  ]
+]

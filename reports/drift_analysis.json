@@ -1,0 +1,82 @@
+{
+  "findings": [
+    [
+      "Référence",
+      "Référence : train1 = 78 h, 66 variables non constantes (8 binaires/discrètes traitées par catégories, 58 continues par déciles) ; 20 variables constantes écartées de l'analyse de distribution."
+    ],
+    [
+      "Fenêtres",
+      "328 fenêtres d'1 h : 78 de référence, 171 de production normale, 79 de production avec attaques dont 53 contiennent au moins une attaque."
+    ],
+    [
+      "Distributions",
+      "Variables les plus dérivantes (médiane du décalage de session, en σ de référence) : P1_PP04SP (2.98 σ), P1_PCV02Z (1.95 σ), P2_VIBTR04 (1.69 σ) ; les plus stables : P1_FCV02D (0.00 σ), P4_ST_PT01 (0.00 σ), P4_ST_FD (0.00 σ)."
+    ],
+    [
+      "Évolution",
+      "44 variables sur 66 voient leur moyenne s'écarter de plus de 1 σ de la référence dans au moins une fenêtre de production ; 24 voient leur dispersion changer de plus de 50 % (médiane)."
+    ],
+    [
+      "PSI",
+      "Sur les fenêtres de production analysées, 81 % des couples (fenêtre, variable) dépassent le seuil conventionnel de 0.1 et 71 % celui de 0.25, contre 76 % et 64 % sur les fenêtres de référence. Les seuils conventionnels doivent être interprétés avec prudence ; le seuil nul propre à chaque variable permet une comparaison mieux adaptée aux données."
+    ],
+    [
+      "KS",
+      "Part des (fenêtre, variable) avec p < 0,001 : 94 % pour des fenêtres de la RÉFÉRENCE elle-même contre 95 % en production normale. Quand la p-value est quasi toujours « significative », elle ne discrimine plus rien : on s'appuie sur la taille d'effet (D, Wasserstein) et sur le seuil nul."
+    ],
+    [
+      "Wasserstein",
+      "Décalage médian : 0.40 σ sur les fenêtres de référence (fluctuation normale) et 0.50 σ en production normale ; 95ᵉ centile 1.37 σ contre 1.82 σ. Le décalage médian de production vaut 1.2 × celui de la référence : la production normale reste dans l'ordre de grandeur de la fluctuation de la référence."
+    ],
+    [
+      "Jensen-Shannon",
+      "Distance médiane : 0.298 (référence) contre 0.334 (production normale) ; 20 % des couples (fenêtre, variable) de production normale dépassent le seuil nul de leur variable."
+    ],
+    [
+      "Drift par feature",
+      "Accord moyen entre les 4 mesures (corrélation de rang des variables) : 0.84. Variables au plus fort drift consensuel : P1_PCV02Z, x1003_18_SETPOINT_OUT, x1002_08_SETPOINT_OUT, P4_ST_PS, P4_HT_PS. Processus au décalage médian le plus élevé : Contrôleurs DCS (x100x) (1.03 σ) ; le plus stable : P3 Traitement d'eau (0.09 σ)."
+    ],
+    [
+      "Drift par feature",
+      "6 % des variables dépassent leur seuil nul de Wasserstein dans plus de la moitié des fenêtres de production normales : la majorité des variables restent dans leur fluctuation normale ; le drift est concentré sur quelques variables."
+    ],
+    [
+      "Heatmap",
+      "Décalage médian (σ) par session de production normale : test1 0.28, train2 0.46, test2 0.51, train3 0.37, train4 0.51. Part de la variance du drift de fenêtre expliquée par la session : η² = 0.26 (l'effet de session n'est pas dominant : une part importante du drift varie d'une heure à l'autre à l'intérieur d'une session)."
+    ],
+    [
+      "Heatmap",
+      "Décalage médian (σ) par session de production normale : test1 0.28, train2 0.46, test2 0.51, train3 0.37, train4 0.51. Part de la variance du drift de fenêtre expliquée par la session : η² = 0.26 (l'effet de session n'est pas dominant : une part importante du drift varie d'une heure à l'autre à l'intérieur d'une session)."
+    ],
+    [
+      "Drift vs attaques",
+      "Changement local médian pendant une attaque : 0.151 σ (test1), contre 0.167 σ (test2). Le drift naturel d'une fenêtre d'une heure en production sans attaque annotée est de 0.496 σ. Ces échelles temporelles étant différentes, la comparaison doit être interprétée avec prudence."
+    ],
+    [
+      "Drift vs attaques",
+      "3 variable(s) présentent, dans plus de la moitié des attaques de test1, un changement supérieur au 95e centile du placebo. Reproductibilité du classement entre test1 et test2 (Spearman) : 0.53 — classement relativement stable."
+    ],
+    [
+      "Référence",
+      "Référence : train1 = 78 h, 66 variables non constantes (8 binaires/discrètes traitées par catégories, 58 continues par déciles) ; 20 variables constantes écartées de l'analyse de distribution."
+    ],
+    [
+      "Détecteur naïf",
+      "Un score global (part de variables au-dessus de leur seuil nul) calé sur le 95ᵉ centile de la référence (0.20) déclencherait une alarme sur 11 % des fenêtres de production NORMALES : ce taux représente plusieurs fois le taux nominal de 5 %. Un drift détecté seul ne peut PAS déclencher un réentraînement, ni même une alerte opérateur."
+    ]
+  ],
+  "key_numbers": {
+    "metric_agreement": 0.8351009745808198,
+    "session_median_wd": {
+      "test1": 0.279,
+      "train2": 0.464,
+      "test2": 0.509,
+      "train3": 0.374,
+      "train4": 0.509
+    },
+    "session_effect_eta2": 0.2571010364953753,
+    "excess_replication_spearman": 0.5331769650415075,
+    "global_alarm_rate_normal_prod": 0.1116751269035533,
+    "global_threshold": 0.1992424242424241
+  }
+}

@@ -1,0 +1,11 @@
+stages:
+  validate:
+    cmd: python -m src.data.validate
+    deps: [src/data/validate.py, src/data/io.py, data/raw]
+    params: [data, validate]
+    outs: [reports/data_quality.json]
+  preprocess:
+    cmd: python -m src.data.preprocess
+    deps: [src/data/preprocess.py, src/data/io.py, data/raw]
+    params: [data, preprocess]
+    outs: [data/processed]
