@@ -1,0 +1,250 @@
+[
+  [
+    "Intégrité",
+    "Durées cohérentes (±10 %) avec la documentation officielle HAI 23.05 : fichiers complets."
+  ],
+  [
+    "Schéma",
+    "Nombre de capteurs par fichier : [86] (attendu 86 pour HAI 23.05) — schéma homogène ✔"
+  ],
+  [
+    "Fuite",
+    "Aucun chevauchement temporel entre fichiers ✔"
+  ],
+  [
+    "Chronologie",
+    "Protocole « sessions » : ['train3', 'train4'] sont POSTÉRIEURS au test final (test2) ; test1 se situe entre ['train1'] et ['train2', 'train3', 'train4']. Ce n'est donc PAS un découpage chronologique strict : il mesure la généralisation entre sessions, pas une mise en production."
+  ],
+  [
+    "Chronologie",
+    "Protocole « chrono » : train = train1 + train2 (sans ses dernières heures), val_normal = ces heures, val = test1, test = test2 ; train3 + train4 (postérieurs) = flux de production simulé."
+  ],
+  [
+    "Chronologie",
+    "Fichiers contigus dans le temps (écart ≤ 5 s) : [('test1', 'train2', 1.0), ('test2', 'train3', 1.0)]. L'état du procédé se prolonge d'un fichier à l'autre : à garder en tête pour la frontière entre jeux."
+  ],
+  [
+    "Variables",
+    "86 variables : 60 continues, 6 binaires, 0 discrètes, 20 constantes sur le train."
+  ],
+  [
+    "Variables",
+    "Variables constantes (aucune information, à exclure) : ['P1_PIT01_HH', 'P1_PP01AD', 'P1_PP01AR', 'P1_PP01BD', 'P1_PP01BR', 'P1_PP02D', 'P1_PP02R', 'P1_SOL01D', 'P1_SOL03D', 'P1_STSP', 'P2_Emerg', 'P2_OnOff', 'P2_RTR', 'P2_TripEx', 'P2_VTR01', 'P2_VTR02', 'P2_VTR03', 'P2_VTR04', 'P3_LH01', 'P3_LL01']"
+  ],
+  [
+    "Variables",
+    "Les variables binaires/discrètes (états de pompes, modes) ne se normalisent pas comme des mesures continues : elles seront conservées mais leur traitement (encodage, features d'événements) est à revoir en Phase 2 / F3."
+  ],
+  [
+    "Variables",
+    "Répartition par processus : {'P1 Chaudière': 0.43, 'P2 Turbine': 0.28, 'P4 Simulation HIL': 0.13, \"P3 Traitement d'eau\": 0.08, 'Contrôleurs DCS (x100x, à rattacher via la doc)': 0.08}"
+  ],
+  [
+    "Échelles",
+    "Les écarts-types varient d'un facteur ~4,151,182 entre variables → normalisation indispensable (sans elle, les variables à grande échelle dominent l'erreur de reconstruction)."
+  ],
+  [
+    "Forme",
+    "21% des variables ont |skewness|>1 et 8% ont une kurtosis>10 (queues lourdes)."
+  ],
+  [
+    "Continuité",
+    "0 trous au total (0 s manquantes) et 0 pas de temps nuls/négatifs. Données quasi parfaitement régulières ✔"
+  ],
+  [
+    "Stationnarité",
+    "35 variables sur 66 changent de plus de 0,5σ entre le début et la fin de train1 (max : P4_ST_FD = 1491.02σ)."
+  ],
+  [
+    "Stationnarité",
+    "Le « normal » n'est donc pas un point fixe : il dépend du régime de fonctionnement. Un modèle entraîné sur un régime peut sur-alerter sur un autre → justifie le monitoring de drift (F18) et le réentraînement contrôlé (F22)."
+  ],
+  [
+    "Fenêtres",
+    "Autocorrélation médiane à 10 s = 0.98, à 30 s = 0.94, à 60 s = 0.91 ; elle passe sous 0,5 vers 600 s."
+  ],
+  [
+    "Fenêtres",
+    "Signaux très persistants : les valeurs successives sont presque redondantes. Des features de **variation** (différences, dérivées) apporteront plus d'information que la valeur brute ; fenêtres 30–60 s à privilégier pour le LSTM-AE."
+  ],
+  [
+    "Corrélations",
+    "|corrélation| moyenne entre variables : 0.12 ; 25 paires dépassent 0.95 (quasi-redondantes)."
+  ],
+  [
+    "Corrélations",
+    "17 variables sont quasi-redondantes avec une autre. Décision : les CONSERVER (DROP_CORRELATED=False) : pour un Autoencoder, la redondance fait partie de la structure « normale » apprise ; une rupture de cette redondance est un signal d'attaque (ex. consigne vs retour de position)."
+  ],
+  [
+    "Couplage dynamique",
+    "|corrélation| moyenne : 0.12 sur les niveaux vs 0.03 sur les variations. Paires les plus couplées dynamiquement : P4_ST_GOV~P4_ST_PO (+0.91), P1_FCV01D~P1_FT02Z (-0.91), x1001_15_ASSIGN_OUT~x1003_24_SUM_OUT (+0.89)."
+  ],
+  [
+    "Couplage dynamique",
+    "Les relations dynamiques sont concentrées sur quelques paires/blocs (commande ↔ retour, consigne ↔ mesure) plutôt que réparties sur toutes les variables : l'Autoencoder devra surtout apprendre ces relations locales, et l'explicabilité (F8) pointera naturellement vers elles."
+  ],
+  [
+    "Dimension",
+    "21 composantes expliquent 90 % de la variance, 25 → 95 %, 33 → 99 % (sur 60 variables continues)."
+  ],
+  [
+    "Dimension",
+    "Le comportement normal vit dans un espace d'environ 25 dimensions : un goulot latent de l'ordre de 12–25 neurones est un bon point de départ pour l'Autoencoder."
+  ],
+  [
+    "Séparabilité",
+    "Distance (PC1-PC2) du centre au train : test1-normal = 1.35, test1-attaque = 2.15 (rapport 1.6). Séparation PARTIELLE en 2D : les attaques sont un peu plus éloignées du train que le normal de test, mais se chevauchent fortement."
+  ],
+  [
+    "Attaques",
+    "test1 : 14 segments détectés pour 14 attaques officielles — cohérent ✔"
+  ],
+  [
+    "Attaques",
+    "test2 : 38 segments détectés pour 38 attaques officielles — cohérent ✔"
+  ],
+  [
+    "Déséquilibre",
+    "Part des secondes en attaque : test1 = 5.5 %, test2 = 3.6 % → classes déséquilibrées : l'accuracy est trompeuse ; on utilisera Precision, Recall, F1 et eTaPR (F11)."
+  ],
+  [
+    "Détection",
+    "Aucune attaque ne dure moins de 30 s (minimum : 56 s) : une fenêtre de 30 s est compatible avec toutes les attaques ; une fenêtre de 60 s peut encore diluer les plus courtes (<60 s) et retarder la détection."
+  ],
+  [
+    "Catalogue",
+    "test2 : l'en-tête officiel annonce 40 attaques / 8735 s mais le fichier en LISTE 38 / 8365 s. Les labels suivent la liste. Incohérence interne du fichier officiel (≈ 370 s non listées) : à citer comme limite ; on ne peut pas exclure des attaques non étiquetées."
+  ],
+  [
+    "Borne univariée",
+    "Validation croisée : 44 % des fenêtres NORMALES dépassent au moins un seuil (bruit résiduel des 66 tests simultanés) contre 90 % des attaques. AUC (nombre de variables au-dessus du seuil) = 0.80 [IC95 % bootstrap 0.74–0.86] ; détection de 38 % des attaques à ≈ 5 % de fausses alertes (fenêtres de durée connue : borne OPTIMISTE)."
+  ],
+  [
+    "Borne univariée",
+    "Lecture : plus l'AUC est loin de 1, plus la détection exige les RELATIONS entre variables et la dynamique, pas des seuils par variable. C'est la référence à battre par l'Autoencoder / le LSTM-AE ; si un modèle multivarié ne la dépasse pas, sa complexité n'est pas justifiée."
+  ],
+  [
+    "Placebo",
+    "Avec les seuils BRUTS, 99 % des fenêtres NORMALES ont au moins une variable « affectée » (médiane 5, max 25) contre 100 % des attaques (médiane 8). Les seuils bruts ne sont donc PAS spécifiques : constater que « toutes les attaques ont une variable affectée » ne prouve rien tant que le placebo n'est pas comparé."
+  ],
+  [
+    "Placebo",
+    "22 variable(s) sont « affectées » dans plus de 10 % des fenêtres NORMALES : {'P1_TIT03': 0.73, 'P3_PIT01': 0.33, 'P3_FIT01': 0.31, 'P4_HT_PO': 0.29, 'P3_LCV01D': 0.28, 'P1_PP04': 0.28} → peu spécifiques (variables lisses/quantifiées/à tendance), à ne pas prendre pour des signatures d'attaque."
+  ],
+  [
+    "Signature",
+    "Après calibrage sur le placebo : 46/52 attaques ont au moins une variable significativement affectée ; médiane 3 variable(s), max 25 ; 13 attaque(s) n'en affectent qu'UNE seule ; 6 sans signature univariée détectable (elles ne se verront que par les relations multivariées ou la dynamique). ATTENTION : 66 seuils simultanés produisent un bruit résiduel, mesuré par validation croisée ci-dessus (44 % des fenêtres normales dépassent au moins un seuil)."
+  ],
+  [
+    "Signature",
+    "Variables les plus SPÉCIFIQUES (fréquence en attaque − fréquence en placebo) : P1_PCV01D (+40 pts), P1_PIT01 (+38 pts), P1_LCV01D (+31 pts), P1_LIT01 (+25 pts), P1_LCV01Z (+24 pts). Candidates du top-K d'explicabilité (F8) ; à comparer avec les variables désignées par l'Autoencoder en Phase 2."
+  ],
+  [
+    "Concentration",
+    "Les 5 plus longues attaques représentent 63 % des secondes d'attaque de test1, 50 % des secondes d'attaque de test2 : un F1 « par point » serait dominé par quelques attaques → métriques par événement (eTaPR) et rappel PAR ATTAQUE indispensables (F11)."
+  ],
+  [
+    "Sévérité",
+    "Le nombre de variables significativement affectées et leur excès par rapport au placebo fournissent une base empirique pour NORMAL/LOW/MEDIUM/HIGH/CRITICAL (F7) ; à valider sur le catalogue exporté `attack_catalog.csv`."
+  ],
+  [
+    "Dérive",
+    "test1 (partie normale) : 46% des variables dérivent (KS>0.15) contre 47% pour train4 (référence normal↔normal)."
+  ],
+  [
+    "Dérive",
+    "test2 (partie normale) : 44% des variables dérivent (KS>0.15) contre 47% pour train4 (référence normal↔normal)."
+  ],
+  [
+    "Dérive",
+    "Variables les plus dérivantes : P4_HT_PS (KS=0.91), P2_ManualSD (KS=0.89), x1003_18_SETPOINT_OUT (KS=0.73)."
+  ],
+  [
+    "Dérive",
+    "Dérive intra-normale MASSIVE : 47% des variables dérivent déjà entre deux fichiers purement normaux (train vs train4). Le « normal » change fortement d'une session à l'autre."
+  ],
+  [
+    "Dérive",
+    "Conséquence pour le Decision Engine (F21) : un drift seul NE DOIT JAMAIS déclencher un réentraînement. Il faut (1) calibrer les seuils de drift sur cette ligne de base, (2) confirmer par une dégradation mesurée du modèle, (3) alerter plutôt que réentraîner quand seul le drift est présent."
+  ],
+  [
+    "Dérive",
+    "Variables à forte dérive de session (KS>0,5 train4 vs train) : ['P1_PCV02Z', 'P1_PP04SP', 'P2_ManualSD', 'P4_ST_PS', 'x1003_18_SETPOINT_OUT', 'x1003_24_SUM_OUT'] — probablement des consignes/états propres à chaque session ; risque que le modèle apprenne « l'identité de la session » et sur-alerte sur un nouveau régime."
+  ],
+  [
+    "Sessions",
+    "Dérive moyenne entre deux sessions normales : 45% des variables (min 33%, max 59%)."
+  ],
+  [
+    "Sessions",
+    "Session d'entraînement la plus proche : test1·normal ← train2 (39%), test2·normal ← train4 (33%). Si une session de test n'est proche d'aucune session train, le train ne couvre pas son régime → faux positifs attendus."
+  ],
+  [
+    "Taille d'effet",
+    "Au sens du KS, 45 % des variables « dérivent » entre deux sessions normales ; mais le décalage de médiane entre une session normale et le train n'est que de 0.29 σ en moyenne (max 0.31 σ), avec au plus 9 % des variables décalées de plus de 1σ. La dérive est SYSTÉMATIQUE mais d'amplitude MODÉRÉE : le Decision Engine doit s'appuyer sur une taille d'effet calibrée sur cette ligne de base, pas sur un test de significativité seul (le KS signale un simple changement de consigne de 1 à 2 %)."
+  ],
+  [
+    "Sessions",
+    "Session la plus éloignée du train (hors train1-3) : test1·normal (décalage moyen 0.31 σ, 9 % des variables à plus de 1σ)."
+  ],
+  [
+    "Sessions",
+    "Si la session de VALIDATION (test1·normal) est la plus atypique, un seuil réglé dessus risque de ne pas se transférer au test final → on comparera plusieurs protocoles de choix du seuil (hypothèse H6, Phase 2)."
+  ],
+  [
+    "Qualité",
+    "Manquants : 0 cellules ; doublons de timestamp : 0 ; trous : 0 (0 s) ; colonnes constantes : 27."
+  ],
+  [
+    "Aberrants",
+    "Pics isolés (Hampel, fenêtre 61 s) : médiane 0.029 % des points par variable ; maximum P4_LD (7.69 %). Certaines variables sont très « piquées » : à surveiller, car un modèle sensible à l'erreur quadratique réagira à ces pics."
+  ],
+  [
+    "Aberrants",
+    "Le critère MAD global de la version précédente est abandonné : il classait comme « aberrantes » des variables simplement multimodales (vanne ouverte/fermée), ce qui n'a pas de sens physique. Aucune suppression d'aberrants n'est faite sur val/test (elle masquerait des attaques) ; seule la winsorisation du train (D8) s'applique."
+  ],
+  [
+    "Constantes",
+    "20 variables constantes sur le train ; 2 d'entre elles changent de valeur dans au moins un autre jeu."
+  ],
+  [
+    "Constantes",
+    "2 variable(s) constante(s) à l'entraînement ne changent, dans les sessions analysées, QUE pendant des attaques : ['P2_Emerg', 'P2_OnOff']. Précision de 100 % sur ces sessions, mais COUVERTURE limitée : 2/52 attaques (4 %), avec un délai médian de 27 s après le début de l'attaque (souvent un effet, pas une cause)."
+  ],
+  [
+    "Constantes",
+    "À confirmer sur d'autres sessions et scénarios : ce n'est PAS une preuve universelle d'attaque. Rôle retenu : couche de règles COMPLÉMENTAIRE (alerte à haute précision), jamais substitut du modèle."
+  ],
+  [
+    "Purge",
+    "2 frontière(s) CONTIGUË(S) purgée(s) de 600 s côté apprentissage : train2 (début, contigu à la fin de test1); train3 (début, contigu à la fin de test2). L'état du procédé se prolonge d'un fichier à l'autre ; sans purge, les premières minutes d'apprentissage prolongeraient la fin d'un jeu de validation/test."
+  ],
+  [
+    "Nettoyage",
+    "0 lignes retirées, 0 insérées (comblement ≤ 5 s) sur 1,180,800 : les données HAI sont déjà régulières, le nettoyage est essentiellement une vérification."
+  ],
+  [
+    "Stabilité",
+    "P1_PCV02D : |z| max = 93 sur données normales. 99.96 % des points du train valent exactement 12 (σ = 0.031) : variable à ÉVÉNEMENTS RARES (valeur « de repos » + excursions). Son z-score n'a pas de sens stable ; elle encode un événement, pas un niveau. Une règle de bande bâtie sur train+val_normal serait trompeuse (les excursions normales de test2 vont plus loin) → à traiter comme variable d'événement (indicateur « ≠ repos ») : hypothèse H4."
+  ],
+  [
+    "Stabilité",
+    "Politique appliquée : « keep_and_flag » (hypothèse H4 à trancher par ablation en Phase 2)."
+  ],
+  [
+    "Quasi-constantes",
+    "Famille 1 — variables à ÉVÉNEMENTS RARES (> 90 % du temps à leur valeur médiane) : ['P1_PCV02D']. Le z-score n'y décrit pas un niveau mais un événement."
+  ],
+  [
+    "Quasi-constantes",
+    "Famille 2 — variables à plus faible σ : P4_ST_FD (σ=0.0016, 1 écrêtées), P4_HT_FD (σ=0.0021, 2,036 écrêtées), P2_24Vdc (σ=0.0035, 0 écrêtées), P1_PCV02D (σ=0.0312, 200 écrêtées), x1001_05_SETPOINT_OUT (σ=0.0423, 0 écrêtées). 80 % des valeurs écrêtées appartiennent à ces 5 variables ; 3 ont un σ inférieur à 0,01 (bruit de mesure de l'ordre du millième) : toute fluctuation banale y devient un grand z-score. Les deux familles sont à comparer en Phase 2 (H4) : garder / indicateur d'événement / plancher d'échelle / exclure."
+  ],
+  [
+    "Winsorisation",
+    "2,805 valeurs du train (0.0061 %) ramenées à ±10σ ; variables les plus concernées : [('P4_HT_FD', 2036), ('P1_FT01Z', 247), ('P1_FT01', 246), ('P1_PCV02D', 200)]. Le modèle apprend sur des valeurs plafonnées alors que val/test gardent leurs extrêmes (volontaire : ils signalent des anomalies) ; l'effet réel sur la détection est une HYPOTHÈSE (H2) à tester par ablation, pas un acquis."
+  ],
+  [
+    "Contrôle",
+    "Après prétraitement, 9 variables ont une amplitude médiane ≥ 1,5× plus grande pendant les attaques que hors attaque sur `val` : la signature n'est pas masquée par la normalisation/winsorisation."
+  ]
+]

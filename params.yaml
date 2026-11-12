@@ -1,0 +1,19 @@
+data:
+  version_tag: "23.05"
+  allow_unversioned: false     # true UNIQUEMENT pour des données de démo/test
+  raw_dir: data/raw
+  processed_dir: data/processed
+  report_path: reports/data_quality.json
+  freq_seconds: 1
+preprocess:
+  protocols: [sessions, chrono]   # sessions = généralisation entre sessions ; chrono = simulation de production
+  holdout_hours: 10               # chrono : fin de train2 gardée comme validation normale
+  max_ffill_seconds: 5
+  embargo_seconds: 600            # purge aux frontières contiguës entre sessions (≈ demi-vie d'autocorrélation)
+  train_clip_sigma: 10            # winsorisation du TRAIN uniquement (hypothèse H2 à tester en Phase 2)
+  exclude_columns: []
+  unstable_z: 50                  # |z| max toléré sur val_normal (données normales)
+  unstable_policy: keep_and_flag  # keep_and_flag | rule (retire du modèle + règle de bande)
+validate:
+  outlier_robust_z: 8.0
+  max_missing_ratio: 0.05

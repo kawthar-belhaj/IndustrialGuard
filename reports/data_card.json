@@ -1,0 +1,472 @@
+{
+  "dataset": "HAI 23.05",
+  "source": "https://www.kaggle.com/datasets/icsdataset/hai-security-dataset",
+  "environment": {
+    "python": "3.14.7",
+    "pandas": "3.0.6",
+    "numpy": "2.5.3",
+    "scikit-learn": "1.9.1",
+    "scipy": "1.18.1",
+    "seed": 42,
+    "date_ex\u00e9cution": "2026-11-12T15:02:10",
+    "git_commit": "non versionn\u00e9"
+  },
+  "files": {
+    "hai-train1": {
+      "role": "Apprentissage",
+      "sha256": "53007b0ba604fbf338e7ac2e08cd81d874b5d1388f3aecb213ddcba5bf2bec4a"
+    },
+    "hai-train2": {
+      "role": "Apprentissage",
+      "sha256": "0e520e82bf78a661ab19ce4967f3c766bd809820f457a9c90c365102d4534c56"
+    },
+    "hai-train3": {
+      "role": "Apprentissage",
+      "sha256": "bfcec2dc05adea103e7491546b0e28268faaa26d3cc717d10f4595c94b81e85d"
+    },
+    "hai-train4": {
+      "role": "Validation normale",
+      "sha256": "56658c83657d42a65db982b864362e0d0ffeb96d1f7b357d5e76e3a5c522d940"
+    },
+    "hai-test1": {
+      "role": "Validation (seuil)",
+      "sha256": "78c7f1d4de1f2ab9ccc2f8c719f80f831033543adb0c81d0d78f84f40838d4be"
+    },
+    "hai-test2": {
+      "role": "Test final",
+      "sha256": "b2b8dd295aefd87e39260fe43cb4c73ee86d6264b0ac4b0761e7efb0c2b545c3"
+    },
+    "label-test1": {
+      "role": "Labels de test1",
+      "sha256": "eaf69edb9c5834bc393afd7bf658b5e408d34fd7bfc3261f80516765fb818fbc"
+    },
+    "label-test2": {
+      "role": "Labels de test2",
+      "sha256": "8090c44981176e39b0f01a7126a80248ac0b93355c00f9db4d4e2f2106452b92"
+    }
+  },
+  "label_alignment": {
+    "hai-test1": {
+      "data_rows": 54000,
+      "label_rows": 54000,
+      "label_unique_timestamps": 54000,
+      "mode": "jointure timestamp",
+      "unmatched_rows": 0
+    },
+    "hai-test2": {
+      "data_rows": 230400,
+      "label_rows": 230400,
+      "label_unique_timestamps": 3841,
+      "mode": "positionnel",
+      "minutes": 3841,
+      "rows_per_minute_equal": true,
+      "labels_sorted": true,
+      "minute_concordance_pct": 100.0
+    }
+  },
+  "official_catalog": {
+    "test1": {
+      "header": {
+        "attacks_listed": 14,
+        "total_listed_s": 2967,
+        "attacks_header": 14,
+        "total_header_s": 2967
+      },
+      "crosscheck_ok": "14/14"
+    },
+    "test2": {
+      "header": {
+        "attacks_listed": 38,
+        "total_listed_s": 8365,
+        "attacks_header": 40,
+        "total_header_s": 8735
+      },
+      "crosscheck_ok": "38/38"
+    }
+  },
+  "parameters": {
+    "FREQ_S": 1,
+    "MAX_FFILL_S": 5,
+    "TRAIN_CLIP_SIGMA": 10,
+    "DROP_CORRELATED": false,
+    "HOLDOUT_H": 10,
+    "EMBARGO_S": 600,
+    "N_PLACEBO": 5,
+    "UNSTABLE_Z": 50,
+    "UNSTABLE_POLICY": "keep_and_flag",
+    "LEVEL_Z": 4.0,
+    "DYN_RATIO": 3.0,
+    "SEED": 42
+  },
+  "embargo": [
+    {
+      "fichier": "train2",
+      "c\u00f4t\u00e9": "d\u00e9but",
+      "lignes_retir\u00e9es": 600,
+      "raison": "contigu \u00e0 la fin de test1"
+    },
+    {
+      "fichier": "train3",
+      "c\u00f4t\u00e9": "d\u00e9but",
+      "lignes_retir\u00e9es": 600,
+      "raison": "contigu \u00e0 la fin de test2"
+    }
+  ],
+  "protocols": {
+    "sessions": {
+      "protocol": "sessions",
+      "n_features": 66,
+      "dropped_columns": [
+        "P1_PIT01_HH",
+        "P1_PP01AD",
+        "P1_PP01AR",
+        "P1_PP01BD",
+        "P1_PP01BR",
+        "P1_PP02D",
+        "P1_PP02R",
+        "P1_SOL01D",
+        "P1_SOL03D",
+        "P1_STSP",
+        "P2_Emerg",
+        "P2_OnOff",
+        "P2_RTR",
+        "P2_TripEx",
+        "P2_VTR01",
+        "P2_VTR02",
+        "P2_VTR03",
+        "P2_VTR04",
+        "P3_LH01",
+        "P3_LL01"
+      ],
+      "unstable_variables": {
+        "P1_PCV02D": 93.22510528564453
+      },
+      "band_rules": {},
+      "clip": {
+        "total": 2805,
+        "share_pct": 0.006095811818703385,
+        "top_vars": {
+          "P4_HT_FD": 2036,
+          "P1_FT01Z": 247,
+          "P1_FT01": 246,
+          "P1_PCV02D": 200,
+          "P1_PCV02Z": 75,
+          "P4_ST_FD": 1
+        }
+      },
+      "rows": {
+        "train": 697200,
+        "val_normal": 198000,
+        "val": 54000,
+        "test": 230400
+      },
+      "attack_ratio": {
+        "val": 0.055203703703703706,
+        "test": 0.036471354166666664
+      }
+    },
+    "chrono": {
+      "protocol": "chrono",
+      "n_features": 66,
+      "dropped_columns": [
+        "P1_PIT01_HH",
+        "P1_PP01AD",
+        "P1_PP01AR",
+        "P1_PP01BD",
+        "P1_PP01BR",
+        "P1_PP02D",
+        "P1_PP02R",
+        "P1_SOL01D",
+        "P1_SOL03D",
+        "P1_STSP",
+        "P2_Emerg",
+        "P2_OnOff",
+        "P2_RTR",
+        "P2_TripEx",
+        "P2_VTR01",
+        "P2_VTR02",
+        "P2_VTR03",
+        "P2_VTR04",
+        "P3_LH01",
+        "P3_LL01"
+      ],
+      "unstable_variables": {},
+      "band_rules": {},
+      "clip": {
+        "total": 2271,
+        "share_pct": 0.006422002782585089,
+        "top_vars": {
+          "P4_HT_FD": 1578,
+          "P1_FT01Z": 203,
+          "P1_FT01": 202,
+          "P1_PCV02D": 196,
+          "P1_PCV02Z": 91,
+          "P4_ST_FD": 1
+        }
+      },
+      "rows": {
+        "train": 535800,
+        "val_normal": 35400,
+        "val": 54000,
+        "test": 230400,
+        "stream": 323400
+      },
+      "attack_ratio": {
+        "val": 0.055203703703703706,
+        "test": 0.036471354166666664
+      }
+    }
+  },
+  "attacks": {
+    "test1": 14,
+    "test2": 38
+  },
+  "integrity_gates": [
+    {
+      "contr\u00f4le": "lignes train1",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "280,800 lignes vs 280,800 attendues (dur\u00e9e officielle \u00d7 3600 s)"
+    },
+    {
+      "contr\u00f4le": "lignes train2",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "291,600 lignes vs 291,600 attendues (dur\u00e9e officielle \u00d7 3600 s)"
+    },
+    {
+      "contr\u00f4le": "lignes train3",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "126,000 lignes vs 126,000 attendues (dur\u00e9e officielle \u00d7 3600 s)"
+    },
+    {
+      "contr\u00f4le": "lignes train4",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "198,000 lignes vs 198,000 attendues (dur\u00e9e officielle \u00d7 3600 s)"
+    },
+    {
+      "contr\u00f4le": "lignes test1",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "54,000 lignes vs 54,000 attendues (dur\u00e9e officielle \u00d7 3600 s)"
+    },
+    {
+      "contr\u00f4le": "lignes test2",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "230,400 lignes vs 230,400 attendues (dur\u00e9e officielle \u00d7 3600 s)"
+    },
+    {
+      "contr\u00f4le": "sch\u00e9ma homog\u00e8ne",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "nombre de capteurs par fichier : [86]"
+    },
+    {
+      "contr\u00f4le": "labels test1 : nombre d'attaques",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "14 segments vs 14 officielles (fusions d'attaques cons\u00e9cutives possibles)"
+    },
+    {
+      "contr\u00f4le": "labels test1 : taux d'attaque plausible",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "5.52 % des secondes"
+    },
+    {
+      "contr\u00f4le": "labels test2 : nombre d'attaques",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "38 segments vs 38 officielles (fusions d'attaques cons\u00e9cutives possibles)"
+    },
+    {
+      "contr\u00f4le": "labels test2 : taux d'attaque plausible",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "3.65 % des secondes"
+    },
+    {
+      "contr\u00f4le": "recoupement test1 : d\u00e9but/fin \u00e0 \u00b12 s",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "14/14 attaques concordent ; segments non list\u00e9s : []"
+    },
+    {
+      "contr\u00f4le": "recoupement test1 : dur\u00e9es",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "dur\u00e9es list\u00e9es + 1 s/attaque = 2981 s vs 2981 s \u00e9tiquet\u00e9es"
+    },
+    {
+      "contr\u00f4le": "recoupement test2 : d\u00e9but/fin \u00e0 \u00b12 s",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "38/38 attaques concordent ; segments non list\u00e9s : []"
+    },
+    {
+      "contr\u00f4le": "recoupement test2 : dur\u00e9es",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "dur\u00e9es list\u00e9es + 1 s/attaque = 8403 s vs 8403 s \u00e9tiquet\u00e9es"
+    },
+    {
+      "contr\u00f4le": "nettoyage train1 : lignes conserv\u00e9es",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "280,800/280,800 lignes (100.000 %)"
+    },
+    {
+      "contr\u00f4le": "nettoyage train2 : lignes conserv\u00e9es",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "291,600/291,600 lignes (100.000 %)"
+    },
+    {
+      "contr\u00f4le": "nettoyage train3 : lignes conserv\u00e9es",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "126,000/126,000 lignes (100.000 %)"
+    },
+    {
+      "contr\u00f4le": "nettoyage train4 : lignes conserv\u00e9es",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "198,000/198,000 lignes (100.000 %)"
+    },
+    {
+      "contr\u00f4le": "nettoyage test1 : lignes conserv\u00e9es",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "54,000/54,000 lignes (100.000 %)"
+    },
+    {
+      "contr\u00f4le": "nettoyage test1 : taux d'attaque pr\u00e9serv\u00e9",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "5.520 % \u2192 5.520 %"
+    },
+    {
+      "contr\u00f4le": "nettoyage test2 : lignes conserv\u00e9es",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "230,400/230,400 lignes (100.000 %)"
+    },
+    {
+      "contr\u00f4le": "nettoyage test2 : taux d'attaque pr\u00e9serv\u00e9",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "3.647 % \u2192 3.647 %"
+    },
+    {
+      "contr\u00f4le": "[sessions] train 100 % normal",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "aucune attaque dans le train"
+    },
+    {
+      "contr\u00f4le": "[sessions] val : taux d'attaque plausible",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "5.52 %"
+    },
+    {
+      "contr\u00f4le": "[sessions] val : timestamps uniques",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "un instant = une ligne"
+    },
+    {
+      "contr\u00f4le": "[sessions] val : segments d'attaque",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "14 segments vs 14 officielles"
+    },
+    {
+      "contr\u00f4le": "[sessions] test : taux d'attaque plausible",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "3.65 %"
+    },
+    {
+      "contr\u00f4le": "[sessions] test : timestamps uniques",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "un instant = une ligne"
+    },
+    {
+      "contr\u00f4le": "[sessions] test : segments d'attaque",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "38 segments vs 38 officielles"
+    },
+    {
+      "contr\u00f4le": "[sessions] scaler centr\u00e9 sur le train",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "moyenne \u2248 0"
+    },
+    {
+      "contr\u00f4le": "[sessions] colonnes identiques et ordonn\u00e9es",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "66 variables"
+    },
+    {
+      "contr\u00f4le": "[sessions] colonne \u00ab session \u00bb pr\u00e9sente (fen\u00eatrage par session)",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "les fen\u00eatres temporelles ne devront jamais enjamber deux sessions"
+    },
+    {
+      "contr\u00f4le": "[sessions] aucun NaN",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "jeux complets"
+    },
+    {
+      "contr\u00f4le": "[sessions] donn\u00e9es de d\u00e9cision ant\u00e9rieures au test final",
+      "r\u00e9sultat": "ALERTE",
+      "d\u00e9tail": "NON chronologique (sessions distinctes) : \u00e0 pr\u00e9senter comme tel"
+    },
+    {
+      "contr\u00f4le": "[chrono] train 100 % normal",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "aucune attaque dans le train"
+    },
+    {
+      "contr\u00f4le": "[chrono] val : taux d'attaque plausible",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "5.52 %"
+    },
+    {
+      "contr\u00f4le": "[chrono] val : timestamps uniques",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "un instant = une ligne"
+    },
+    {
+      "contr\u00f4le": "[chrono] val : segments d'attaque",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "14 segments vs 14 officielles"
+    },
+    {
+      "contr\u00f4le": "[chrono] test : taux d'attaque plausible",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "3.65 %"
+    },
+    {
+      "contr\u00f4le": "[chrono] test : timestamps uniques",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "un instant = une ligne"
+    },
+    {
+      "contr\u00f4le": "[chrono] test : segments d'attaque",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "38 segments vs 38 officielles"
+    },
+    {
+      "contr\u00f4le": "[chrono] scaler centr\u00e9 sur le train",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "moyenne \u2248 0"
+    },
+    {
+      "contr\u00f4le": "[chrono] colonnes identiques et ordonn\u00e9es",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "66 variables"
+    },
+    {
+      "contr\u00f4le": "[chrono] colonne \u00ab session \u00bb pr\u00e9sente (fen\u00eatrage par session)",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "les fen\u00eatres temporelles ne devront jamais enjamber deux sessions"
+    },
+    {
+      "contr\u00f4le": "[chrono] aucun NaN",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "jeux complets"
+    },
+    {
+      "contr\u00f4le": "[chrono] donn\u00e9es de d\u00e9cision ant\u00e9rieures au test final",
+      "r\u00e9sultat": "OK",
+      "d\u00e9tail": "chronologie stricte"
+    }
+  ],
+  "constant_rules_n": 20,
+  "known_limitations": [
+    "Protocole \u00ab sessions \u00bb : sessions distinctes mais NON strictement chronologiques (train3/train4 post\u00e9rieurs au test2) ; protocole \u00ab chrono \u00bb fourni en compl\u00e9ment",
+    "summary_label2.txt : l'en-t\u00eate annonce plus d'attaques que la liste ; les labels suivent la liste",
+    "Alignement positionnel de label-test2.csv : l'ordre intra-minute est recoup\u00e9 avec le catalogue officiel (seconde pr\u00e8s), pas prouv\u00e9 ind\u00e9pendamment",
+    "Classification des tags par type : heuristique",
+    "R\u00e8gles sur constantes : pr\u00e9cision \u00e9lev\u00e9e mais couverture limit\u00e9e, valid\u00e9es sur 3 sessions seulement",
+    "D\u00e9rive naturelle syst\u00e9matique entre sessions normales, d'amplitude mod\u00e9r\u00e9e (taille d'effet \u00e0 utiliser plut\u00f4t que le KS seul)",
+    "Signature des attaques : seuils calibr\u00e9s sur un placebo de fen\u00eatres normales ; une attaque qui ne rompt que des relations multivari\u00e9es peut \u00e9chapper \u00e0 cette mesure univari\u00e9e",
+    "Fen\u00eatrage temporel : par colonne \u00ab session \u00bb uniquement (jamais \u00e0 cheval sur deux sessions)"
+  ]
+}
